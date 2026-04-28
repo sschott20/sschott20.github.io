@@ -31,12 +31,12 @@ Before starting my PhD, I completed a B.S. in Mathematics and Computer Science a
 
 <ul class="projects">
   <li>
-    <span class="name">TypeGo</span>.
-    <span class="desc">A multi-layer LLM planning system for the Unitree Go2 quadruped, combining high-level natural-language reasoning with low-level learned control.</span>
-  </li>
-  <li>
     <a class="name" href="https://github.com/sschott20/typemem">typemem</a>.
     <span class="desc">An abstract memory framework for LLM-controlled robots: typed, composable memory primitives for planning agents.</span>
+  </li>
+  <li>
+    <span class="name">TypeGo</span>.
+    <span class="desc">A multi-layer LLM planning system for the Unitree Go2 quadruped, combining high-level natural-language reasoning with low-level learned control.</span>
   </li>
   <li>
     <a class="name" href="https://github.com/sschott20/go2_sim2real">go2_sim2real</a>.
