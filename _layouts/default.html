@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {% if page.url == "/" %}
+    {% assign page_title = site.title %}
+  {% else %}
+    {% assign page_title = page.title | append: " — Sebastian Schott" %}
+  {% endif %}
+  {% assign page_description = page.description | default: site.description %}
+  {% assign page_url = page.url | absolute_url %}
+  {% assign page_image = "/assets/headshot.jpg" | absolute_url %}
+
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ page_description }}">
+  <meta name="author" content="{{ site.author }}">
+  <link rel="canonical" href="{{ page_url }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
+  <meta property="og:url" content="{{ page_url }}">
+  <meta property="og:image" content="{{ page_image }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description }}">
+  <meta name="twitter:image" content="{{ page_image }}">
+
+  <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+</head>
+<body>
+  <main>
+    {{ content }}
+  </main>
+</body>
+</html>
