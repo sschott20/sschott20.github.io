@@ -1,0 +1,7 @@
+name = "site-counter"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[[kv_namespaces]]
+binding = "COUNTER"
+id = "ec2511aa3d6c46fd8ac5362ad3b40ae9"

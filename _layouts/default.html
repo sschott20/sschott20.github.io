@@ -35,7 +35,7 @@
     {{ content }}
   </main>
   {% if jekyll.environment == "production" %}
-  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "69d6f1e324a141919b5a2cf4c3376471"}'></script>
+  <script>fetch("https://site-counter.sschott20.workers.dev/hit", { method: "POST" });</script>
   {% endif %}
 </body>
 </html>
