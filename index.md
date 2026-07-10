@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Sebastian (Alex) Schott
+title: Alex (Sebastian) Schott
 ---
 
 <div class="header">
-  <img class="headshot" src="{{ '/assets/headshot.jpg' | relative_url }}" alt="Sebastian Schott">
+  <img class="headshot" src="{{ '/assets/headshot.jpg' | relative_url }}" alt="Alex Schott">
   <div class="header-text">
-    <h1>Sebastian (Alex) Schott</h1>
+    <h1>Alex (Sebastian) Schott</h1>
     <p class="subtitle">Computer Science PhD student, Yale University.</p>
   </div>
 </div>
@@ -14,7 +14,7 @@ title: Sebastian (Alex) Schott
 <p class="links">
   <a href="https://github.com/sschott20">GitHub</a>
   <a href="mailto:a.schott@yale.edu">Email</a>
-  <a href="https://www.linkedin.com/in/sebastian-schott/">LinkedIn</a>
+  <a href="https://www.linkedin.com/in/sebastian-schott/">Linkedin</a>
   <a href="https://scholar.google.com/citations?user=EbaHnkQAAAAJ&amp;hl=en&amp;oi=sra">Scholar</a>
   <a href="{{ '/trees/' | relative_url }}">Trees</a>
 </p>
