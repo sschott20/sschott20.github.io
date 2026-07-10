@@ -196,7 +196,7 @@ footer a { color: var(--muted); }
     <table id="day-table"></table>
   </details>
 
-  <h2>Where &amp; what</h2>
+  <h2>Visits by page, referrer &amp; country</h2>
   <div class="cols">
     <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Pages</p><table id="pages"></table></div>
     <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Referrers</p><table id="refs"></table></div>
