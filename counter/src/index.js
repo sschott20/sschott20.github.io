@@ -155,13 +155,13 @@ svg { display: block; width: 100%; height: auto; }
 .tooltip .tt-date { opacity: 0.75; }
 .cols { display: flex; gap: 2.5rem; flex-wrap: wrap; }
 .col { flex: 1 1 160px; min-width: 150px; }
-table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; table-layout: fixed; }
 td { padding: 0.18rem 0; vertical-align: baseline; border-bottom: 1px solid transparent; }
 td.num {
-  text-align: right; color: var(--muted);
+  width: 4.5rem; text-align: right; color: var(--muted);
   font-feature-settings: "lnum", "tnum"; font-variant-numeric: tabular-nums;
 }
-td.key { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 1rem; }
+td.key { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 1rem; }
 .empty { color: var(--muted); font-style: italic; font-size: 0.95rem; }
 table.wide { max-width: 420px; }
 footer {
