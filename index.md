@@ -35,6 +35,16 @@ Before starting my PhD, I completed a B.S. in Mathematics and Computer Science a
   </li>
 </ul>
 
+## Publications
+
+<ul class="projects">
+  <li>
+    <a class="name" href="https://doi.org/10.1136/tobaccocontrol-2021-057243">Understanding e-cigarette content and promotion on YouTube through machine learning</a>.
+    <span class="desc">Using machine learning to characterize e-cigarette video content, featured products, uploaders, and marketing on YouTube.</span>
+    <span class="meta">Grace Kong, <span class="me">Alex Sebastian Schott</span>, Juhan Lee, Hassan Dashtian, Dhiraj Murthy. Tobacco Control 32(6), 2023.</span>
+  </li>
+</ul>
+
 ## Projects
 
 <h3>LLMs &amp; Robotics</h3>
