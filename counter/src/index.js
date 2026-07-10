@@ -40,11 +40,12 @@ async function handleHit(request, env) {
     } catch (e) {
       // unparseable referrer: skip the dimension, keep the visit
     }
-    if (request.cf && request.cf.country) {
-      writes.push(bump(env, "country:" + request.cf.country));
-    }
     if (data.n === true) {
       writes.push(bump(env, "uniq:" + today));
+      // countries count unique visitors (per day), not page loads
+      if (request.cf && request.cf.country) {
+        writes.push(bump(env, "country:" + request.cf.country));
+      }
     }
     await Promise.all(writes);
   }
@@ -70,7 +71,7 @@ async function handleStats(env) {
     Promise.all(days.map((d) => env.COUNTER.get("day:" + d))),
     Promise.all(days.map((d) => env.COUNTER.get("uniq:" + d))),
     readPrefix(env, "page:", 8),
-    readPrefix(env, "ref:", 8),
+    readPrefix(env, "ref:", 100),
     readPrefix(env, "country:", 8),
   ]);
 
@@ -160,9 +161,7 @@ td.num {
 }
 td.key { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 1rem; }
 .empty { color: var(--muted); font-style: italic; font-size: 0.95rem; }
-details { margin-top: 0.75rem; font-size: 0.9rem; color: var(--muted); }
-summary { cursor: pointer; }
-details table { margin-top: 0.5rem; max-width: 320px; }
+table.wide { max-width: 420px; }
 footer {
   margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
   color: var(--muted); font-size: 0.9rem; font-style: italic;
@@ -191,16 +190,13 @@ footer a { color: var(--muted); }
     <svg id="chart" viewBox="0 0 680 240" role="img" aria-label="Daily visits, last 30 days"></svg>
     <div class="tooltip" id="tt"></div>
   </div>
-  <details>
-    <summary>Data table</summary>
-    <table id="day-table"></table>
-  </details>
+  <h2>Referrers</h2>
+  <table id="refs" class="wide"></table>
 
-  <h2>Visits by page, referrer &amp; country</h2>
+  <h2>Pages &amp; countries</h2>
   <div class="cols">
-    <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Pages</p><table id="pages"></table></div>
-    <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Referrers</p><table id="refs"></table></div>
-    <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Countries</p><table id="countries"></table></div>
+    <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Pages (visits)</p><table id="pages"></table></div>
+    <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Countries (unique)</p><table id="countries"></table></div>
   </div>
 
   <footer>
@@ -234,7 +230,6 @@ footer a { color: var(--muted); }
     if (peak.v > 0) document.getElementById("peak-date").textContent = shortDate(peak.d);
 
     drawChart(days, peak);
-    fillDayTable(days);
     fillDims("pages", s.pages, function (k) { return k; });
     fillDims("refs", s.refs, function (k) { return k; });
     var regionNames;
@@ -313,15 +308,6 @@ footer a { color: var(--muted); }
 
     // baseline
     el("line", { x1: PAD_L, x2: W - PAD_R, y1: PAD_T + plotH, y2: PAD_T + plotH, stroke: "var(--fg)", "stroke-width": 1 }, svg);
-  }
-
-  function fillDayTable(days) {
-    var t = document.getElementById("day-table");
-    var html = "<tr><td class='key'>Date</td><td class='num'>Visits</td><td class='num'>Unique</td></tr>";
-    days.forEach(function (r) {
-      html += "<tr><td class='key'>" + r.d + "</td><td class='num'>" + r.v + "</td><td class='num'>" + r.u + "</td></tr>";
-    });
-    t.innerHTML = html;
   }
 
   function fillDims(id, rows, nameOf) {
