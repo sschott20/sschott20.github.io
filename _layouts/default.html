@@ -29,6 +29,32 @@
   <meta name="twitter:image" content="{{ page_image }}">
 
   <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+
+  {% if page.url == "/" %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Alex Schott",
+    "alternateName": ["Sebastian Schott", "Alex Sebastian Schott", "Sebastian Alex Schott"],
+    "url": "https://sschott20.github.io/",
+    "image": "https://sschott20.github.io/assets/headshot.jpg",
+    "jobTitle": "Computer Science PhD Student",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "Yale University",
+      "url": "https://www.yale.edu/"
+    },
+    "email": "mailto:a.schott@yale.edu",
+    "knowsAbout": ["Large Language Models", "Robotics", "Reinforcement Learning", "Computer Systems"],
+    "sameAs": [
+      "https://github.com/sschott20",
+      "https://scholar.google.com/citations?user=EbaHnkQAAAAJ",
+      "https://www.linkedin.com/in/sebastian-schott/"
+    ]
+  }
+  </script>
+  {% endif %}
 </head>
 <body>
   <main>

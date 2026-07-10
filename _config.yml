@@ -1,5 +1,5 @@
 title: Alex Schott — Yale CS PhD
-description: Computer Science PhD student at Yale, working on LLMs, robotics, and systems.
+description: Alex (Sebastian) Schott is a Computer Science PhD student at Yale University, working on LLMs, robotics, and systems.
 author: Alex Schott
 url: "https://sschott20.github.io"
 baseurl: ""
@@ -13,4 +13,5 @@ exclude:
   - vendor
   - counter
 
-plugins: []
+plugins:
+  - jekyll-sitemap

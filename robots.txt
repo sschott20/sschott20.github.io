@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sschott20.github.io/sitemap.xml
