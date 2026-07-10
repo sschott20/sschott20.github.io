@@ -141,6 +141,13 @@ a:hover {
   color: var(--muted);
   font-size: 0.92rem;
   font-style: italic;
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.me {
+  font-weight: 600;
+  color: var(--fg);
 }
 
 ul.bullets {

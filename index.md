@@ -25,6 +25,16 @@ I am a Computer Science PhD student at Yale, advised by Prof. Lin Zhong in the [
 
 Before starting my PhD, I completed a B.S. in Mathematics and Computer Science at Yale (2021 to 2025). I worked with the same lab on Hopter, a Rust operating system for embedded devices, and earlier with Prof. Jay Lim on correctly rounded floating-point math libraries.
 
+## Preprints
+
+<ul class="projects">
+  <li>
+    <a class="name" href="https://arxiv.org/abs/2607.05482">TypeGo: An OS Runtime for Embodied Agents</a>.
+    <span class="desc">Structuring LLM-based planning as an OS-style runtime so embodied agents can act in real time on concurrent goals.</span>
+    <span class="meta">Guojun Chen, <span class="me">Alex Schott</span>, Lin Zhong. arXiv:2607.05482, July 2026.</span>
+  </li>
+</ul>
+
 ## Projects
 
 <h3>LLMs &amp; Robotics</h3>
@@ -35,8 +45,8 @@ Before starting my PhD, I completed a B.S. in Mathematics and Computer Science a
     <span class="desc">An abstract memory framework for LLM-controlled robots: typed, composable memory primitives for planning agents.</span>
   </li>
   <li>
-    <span class="name">TypeGo</span>.
-    <span class="desc">A multi-layer LLM planning system for the Unitree Go2 quadruped, combining high-level natural-language reasoning with low-level learned control.</span>
+    <a class="name" href="https://arxiv.org/abs/2607.05482">TypeGo</a>.
+    <span class="desc">A multi-layer LLM planning system for the Unitree Go2 quadruped, combining high-level natural-language reasoning with low-level learned control. Now a preprint on arXiv.</span>
   </li>
   <li>
     <a class="name" href="https://github.com/sschott20/go2_sim2real">go2_sim2real</a>.
@@ -67,5 +77,5 @@ Before starting my PhD, I completed a B.S. in Mathematics and Computer Science a
 </ul>
 
 <footer>
-  Last updated April 2026. Built with Jekyll. <a href="https://github.com/sschott20">Source on GitHub</a>.
+  Last updated July 2026. Built with Jekyll. <a href="https://github.com/sschott20">Source on GitHub</a>.
 </footer>

@@ -35,7 +35,19 @@
     {{ content }}
   </main>
   {% if jekyll.environment == "production" %}
-  <script>fetch("https://site-counter.sschott20.workers.dev/hit", { method: "POST" });</script>
+  <script>
+    (function () {
+      var today = new Date().toISOString().slice(0, 10), first = false;
+      try {
+        first = localStorage.getItem("counted") !== today;
+        if (first) localStorage.setItem("counted", today);
+      } catch (e) {}
+      fetch("https://site-counter.sschott20.workers.dev/hit", {
+        method: "POST",
+        body: JSON.stringify({ p: location.pathname, r: document.referrer, n: first })
+      });
+    })();
+  </script>
   {% endif %}
 </body>
 </html>
