@@ -33,9 +33,11 @@ async function handleHit(request, env) {
       writes.push(bump(env, "page:" + data.p.split("?")[0].slice(0, 64)));
     }
     try {
-      const refHost = data.r ? new URL(data.r).hostname : null;
-      if (refHost && refHost !== SITE_HOST) {
-        writes.push(bump(env, "ref:" + refHost.slice(0, 64)));
+      const refUrl = data.r ? new URL(data.r) : null;
+      if (refUrl && refUrl.hostname !== SITE_HOST) {
+        // keep the referrer as the browser sent it (usually just the origin,
+        // per referrer policy), minus query/fragment which can carry tokens
+        writes.push(bump(env, "ref:" + (refUrl.origin + refUrl.pathname).slice(0, 128)));
       }
     } catch (e) {
       // unparseable referrer: skip the dimension, keep the visit
