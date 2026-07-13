@@ -278,7 +278,10 @@ footer a { color: var(--muted); }
     fillDims("countries", s.countries, function (k) {
       try { return (regionNames && regionNames.of(k)) || k; } catch (e) { return k; }
     });
-    fillDims("links", s.links, function (k) { return k.replace(/^https?:\/\//, ""); });
+    fillDims("links", s.links, function (k) {
+      var i = k.indexOf("://");
+      return i >= 0 ? k.slice(i + 3) : k; // strip https:// but keep mailto: etc.
+    });
   });
 
   function drawChart(days, peak) {
