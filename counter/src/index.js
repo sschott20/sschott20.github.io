@@ -54,6 +54,25 @@ async function handleHit(request, env) {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
+// POST /click — a visitor clicked a link on the site. Body: { href }
+async function handleClick(request, env) {
+  if (request.headers.get("Origin") === SITE_ORIGIN) {
+    let data = {};
+    try {
+      data = JSON.parse(await request.text()) || {};
+    } catch (e) {
+      // malformed body: nothing to record
+    }
+    if (typeof data.href === "string" && data.href) {
+      // drop the fragment (in-page anchors), cap length; keep scheme so
+      // mailto: and https: links stay distinguishable
+      const href = data.href.split("#")[0].slice(0, 200);
+      await bump(env, "link:" + href);
+    }
+  }
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
+
 async function readPrefix(env, prefix, limit) {
   const list = await env.COUNTER.list({ prefix });
   const vals = await Promise.all(list.keys.map((k) => env.COUNTER.get(k.name)));
@@ -68,13 +87,14 @@ async function handleStats(env) {
   const days = [];
   for (let i = 29; i >= 0; i--) days.push(utcDay(i));
 
-  const [total, dayVals, uniqVals, pages, refs, countries] = await Promise.all([
+  const [total, dayVals, uniqVals, pages, refs, countries, links] = await Promise.all([
     env.COUNTER.get("visits"),
     Promise.all(days.map((d) => env.COUNTER.get("day:" + d))),
     Promise.all(days.map((d) => env.COUNTER.get("uniq:" + d))),
     readPrefix(env, "page:", 8),
     readPrefix(env, "ref:", 100),
     readPrefix(env, "country:", 8),
+    readPrefix(env, "link:", 30),
   ]);
 
   const body = {
@@ -87,6 +107,7 @@ async function handleStats(env) {
     pages,
     refs,
     countries,
+    links,
   };
   return new Response(JSON.stringify(body), {
     headers: { "content-type": "application/json", "cache-control": "no-store" },
@@ -163,7 +184,15 @@ td.num {
 }
 td.key { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 1rem; }
 .empty { color: var(--muted); font-style: italic; font-size: 0.95rem; }
-table.wide { max-width: 420px; }
+table.wide { max-width: 520px; }
+.owner { margin-top: 3rem; }
+.owner-note { color: var(--muted); font-size: 0.9rem; font-style: italic; margin: 0 0 0.9rem; max-width: 460px; }
+.btn {
+  display: inline-block; text-decoration: none; color: var(--fg);
+  border: 1px solid var(--rule); padding: 0.35rem 0.9rem; margin-right: 0.6rem;
+  border-radius: 3px; font-size: 0.95rem;
+}
+.btn:hover { border-color: var(--muted); background: var(--wash); }
 footer {
   margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
   color: var(--muted); font-size: 0.9rem; font-style: italic;
@@ -195,10 +224,20 @@ footer a { color: var(--muted); }
   <h2>Referrers</h2>
   <table id="refs" class="wide"></table>
 
+  <h2>Link clicks</h2>
+  <table id="links" class="wide"></table>
+
   <h2>Pages &amp; countries</h2>
   <div class="cols">
     <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Pages (visits)</p><table id="pages"></table></div>
     <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Countries (unique)</p><table id="countries"></table></div>
+  </div>
+
+  <div class="owner">
+    <p class="kicker" style="margin-bottom:0.5rem">Your own visits</p>
+    <p class="owner-note">Hide this browser from every count (visits, pages, referrers, countries, clicks). Set once per browser and device you use.</p>
+    <a class="btn" href="https://sschott20.github.io/?me=1">Hide my visits</a>
+    <a class="btn" href="https://sschott20.github.io/?me=0">Show my visits</a>
   </div>
 
   <footer>
@@ -239,6 +278,7 @@ footer a { color: var(--muted); }
     fillDims("countries", s.countries, function (k) {
       try { return (regionNames && regionNames.of(k)) || k; } catch (e) { return k; }
     });
+    fillDims("links", s.links, function (k) { return k.replace(/^https?:\/\//, ""); });
   });
 
   function drawChart(days, peak) {
@@ -336,6 +376,11 @@ export default {
 
     if (pathname === "/hit") {
       if (request.method === "POST") return handleHit(request, env);
+      if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
+      return new Response("not found", { status: 404 });
+    }
+    if (pathname === "/click") {
+      if (request.method === "POST") return handleClick(request, env);
       if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
       return new Response("not found", { status: 404 });
     }

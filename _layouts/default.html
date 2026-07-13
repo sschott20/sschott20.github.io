@@ -63,15 +63,58 @@
   {% if jekyll.environment == "production" %}
   <script>
     (function () {
+      var W = "https://site-counter.sschott20.workers.dev";
+
+      // Self-exclusion: ?me=1 hides this browser from all tracking, ?me=0 undoes it.
+      // The flag lives in localStorage on this origin, so an excluded browser
+      // sends nothing at all — no visit, page, referrer, country, or click.
+      try {
+        var params = new URLSearchParams(location.search);
+        if (params.has("me")) {
+          if (params.get("me") === "0") localStorage.removeItem("owner");
+          else localStorage.setItem("owner", "1");
+          history.replaceState(null, "", location.pathname);
+          toast(params.get("me") === "0"
+            ? "Tracking re-enabled for this browser."
+            : "Your visits are now hidden on this browser.");
+          return; // never count the toggle action itself
+        }
+        if (localStorage.getItem("owner") === "1") return;
+      } catch (e) {}
+
+      // Page view
       var today = new Date().toISOString().slice(0, 10), first = false;
       try {
         first = localStorage.getItem("counted") !== today;
         if (first) localStorage.setItem("counted", today);
       } catch (e) {}
-      fetch("https://site-counter.sschott20.workers.dev/hit", {
+      fetch(W + "/hit", {
         method: "POST",
         body: JSON.stringify({ p: location.pathname, r: document.referrer, n: first })
       });
+
+      // Link clicks — sendBeacon survives the navigation to the clicked link
+      document.addEventListener("click", function (e) {
+        var a = e.target.closest ? e.target.closest("a[href]") : null;
+        if (!a) return;
+        try {
+          var body = JSON.stringify({ href: a.href });
+          if (navigator.sendBeacon) navigator.sendBeacon(W + "/click", body);
+          else fetch(W + "/click", { method: "POST", body: body, keepalive: true });
+        } catch (e) {}
+      });
+
+      function toast(msg) {
+        try {
+          var t = document.createElement("div");
+          t.textContent = msg;
+          t.style.cssText = "position:fixed;left:50%;bottom:2rem;transform:translateX(-50%);" +
+            "background:#1a1a1a;color:#fdfdfb;padding:0.6rem 1rem;border-radius:3px;" +
+            "font:16px/1.4 Garamond,serif;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2)";
+          document.body.appendChild(t);
+          setTimeout(function () { t.remove(); }, 4000);
+        } catch (e) {}
+      }
     })();
   </script>
   {% endif %}
