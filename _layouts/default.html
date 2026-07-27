@@ -82,6 +82,18 @@
         if (localStorage.getItem("owner") === "1") return;
       } catch (e) {}
 
+      // ?src=<tag> attributes arrivals from places that strip the referrer
+      // (LinkedIn, mail, chat apps). Recorded once, then dropped from the URL
+      // bar so a reload or a reshare doesn't count again.
+      var src = "";
+      try {
+        var s = new URLSearchParams(location.search).get("src");
+        if (s && /^[a-z0-9_-]{1,24}$/i.test(s)) {
+          src = s;
+          history.replaceState(null, "", location.pathname + location.hash);
+        }
+      } catch (e) {}
+
       // Page view
       var today = new Date().toISOString().slice(0, 10), first = false;
       try {
@@ -90,7 +102,7 @@
       } catch (e) {}
       fetch(W + "/hit", {
         method: "POST",
-        body: JSON.stringify({ p: location.pathname, r: document.referrer, n: first })
+        body: JSON.stringify({ p: location.pathname, r: document.referrer, n: first, s: src })
       });
 
       // Link clicks — sendBeacon survives the navigation to the clicked link

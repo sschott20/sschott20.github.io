@@ -6,6 +6,32 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST",
 };
 
+// ?src=<tag> values worth storing: short, and safe to use as a key
+const TAG_RE = /^[a-z0-9_-]{1,24}$/i;
+
+// URL.origin is the string "null" for non-special schemes such as
+// android-app://, which would collapse every in-app referrer onto one
+// meaningless key.
+function refOrigin(u) {
+  return u.origin === "null" ? u.protocol + "//" + u.host : u.origin;
+}
+
+// Coarse client bucket. Crawlers that respect robots and don't run JS
+// (Googlebot, GPTBot) never reach this worker at all, so anything landing here
+// is a browser — or something automated driving one.
+function clientBucket(ua) {
+  if (!ua) return "unknown";
+  if (/Headless|PhantomJS|Electron|python|curl\/|wget|\bbot\b|bot\/|crawler|spider/i.test(ua)) {
+    return "automated";
+  }
+  if (/Edg\//.test(ua)) return "Edge";
+  if (/OPR\/|Opera/.test(ua)) return "Opera";
+  if (/Firefox\//.test(ua)) return "Firefox";
+  if (/Chrome\//.test(ua)) return "Chrome";
+  if (/Safari\//.test(ua)) return "Safari";
+  return "other";
+}
+
 function utcDay(offset = 0) {
   const d = new Date(Date.now() - offset * 86400000);
   return d.toISOString().slice(0, 10);
@@ -32,22 +58,35 @@ async function handleHit(request, env) {
     if (typeof data.p === "string" && data.p.startsWith("/")) {
       writes.push(bump(env, "page:" + data.p.split("?")[0].slice(0, 64)));
     }
-    try {
-      const refUrl = data.r ? new URL(data.r) : null;
-      if (refUrl && refUrl.hostname !== SITE_HOST) {
-        // keep the referrer as the browser sent it (usually just the origin,
-        // per referrer policy), minus query/fragment which can carry tokens
-        writes.push(bump(env, "ref:" + (refUrl.origin + refUrl.pathname).slice(0, 128)));
+    // An arrival with no referrer at all is the common case — links opened from
+    // chat apps, mail clients and LinkedIn all land bare. Count it explicitly,
+    // so an empty referrer list can never be mistaken for broken tracking.
+    if (data.r === "") {
+      writes.push(bump(env, "ref:(direct)"));
+    } else if (typeof data.r === "string") {
+      try {
+        const refUrl = new URL(data.r);
+        if (refUrl.hostname !== SITE_HOST) {
+          // keep the referrer as the browser sent it (usually just the origin,
+          // per referrer policy), minus query/fragment which can carry tokens
+          writes.push(bump(env, "ref:" + (refOrigin(refUrl) + refUrl.pathname).slice(0, 128)));
+        }
+      } catch (e) {
+        // unparseable referrer: skip the dimension, keep the visit
       }
-    } catch (e) {
-      // unparseable referrer: skip the dimension, keep the visit
+    }
+    // Self-declared source tag. Kept apart from ref: — a referrer is what the
+    // browser reported, a tag is what the link said about itself.
+    if (typeof data.s === "string" && TAG_RE.test(data.s)) {
+      writes.push(bump(env, "src:" + data.s.toLowerCase()));
     }
     if (data.n === true) {
       writes.push(bump(env, "uniq:" + today));
-      // countries count unique visitors (per day), not page loads
+      // countries and clients count unique visitors (per day), not page loads
       if (request.cf && request.cf.country) {
         writes.push(bump(env, "country:" + request.cf.country));
       }
+      writes.push(bump(env, "client:" + clientBucket(request.headers.get("User-Agent"))));
     }
     await Promise.all(writes);
   }
@@ -87,15 +126,18 @@ async function handleStats(env) {
   const days = [];
   for (let i = 29; i >= 0; i--) days.push(utcDay(i));
 
-  const [total, dayVals, uniqVals, pages, refs, countries, links] = await Promise.all([
-    env.COUNTER.get("visits"),
-    Promise.all(days.map((d) => env.COUNTER.get("day:" + d))),
-    Promise.all(days.map((d) => env.COUNTER.get("uniq:" + d))),
-    readPrefix(env, "page:", 8),
-    readPrefix(env, "ref:", 100),
-    readPrefix(env, "country:", 8),
-    readPrefix(env, "link:", 30),
-  ]);
+  const [total, dayVals, uniqVals, pages, refs, srcs, countries, clients, links] =
+    await Promise.all([
+      env.COUNTER.get("visits"),
+      Promise.all(days.map((d) => env.COUNTER.get("day:" + d))),
+      Promise.all(days.map((d) => env.COUNTER.get("uniq:" + d))),
+      readPrefix(env, "page:", 8),
+      readPrefix(env, "ref:", 100),
+      readPrefix(env, "src:", 20),
+      readPrefix(env, "country:", 8),
+      readPrefix(env, "client:", 8),
+      readPrefix(env, "link:", 30),
+    ]);
 
   const body = {
     total: parseInt(total || "0", 10),
@@ -106,7 +148,9 @@ async function handleStats(env) {
     })),
     pages,
     refs,
+    srcs,
     countries,
+    clients,
     links,
   };
   return new Response(JSON.stringify(body), {
@@ -186,7 +230,8 @@ td.key { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding
 .empty { color: var(--muted); font-style: italic; font-size: 0.95rem; }
 table.wide { max-width: 520px; }
 .owner { margin-top: 3rem; }
-.owner-note { color: var(--muted); font-size: 0.9rem; font-style: italic; margin: 0 0 0.9rem; max-width: 460px; }
+.owner-note, .hint { color: var(--muted); font-size: 0.9rem; font-style: italic; margin: 0 0 0.9rem; max-width: 460px; }
+.hint code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; font-style: normal; }
 .btn {
   display: inline-block; text-decoration: none; color: var(--fg);
   border: 1px solid var(--rule); padding: 0.35rem 0.9rem; margin-right: 0.6rem;
@@ -222,15 +267,23 @@ footer a { color: var(--muted); }
     <div class="tooltip" id="tt"></div>
   </div>
   <h2>Referrers</h2>
+  <p class="hint">What the browser reported. <em>(direct)</em> means it reported nothing —
+  a bookmark, or a link opened from LinkedIn, mail, or a chat app, all of which strip it.</p>
   <table id="refs" class="wide"></table>
+
+  <h2>Tagged links</h2>
+  <p class="hint">Attribution for places that strip the referrer: post the link as
+  <code>https://sschott20.github.io/?src=linkedin</code> and arrivals land here.</p>
+  <table id="srcs" class="wide"></table>
 
   <h2>Link clicks</h2>
   <table id="links" class="wide"></table>
 
-  <h2>Pages &amp; countries</h2>
+  <h2>Pages, countries &amp; clients</h2>
   <div class="cols">
     <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Pages (visits)</p><table id="pages"></table></div>
     <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Countries (unique)</p><table id="countries"></table></div>
+    <div class="col"><p class="kicker" style="margin-bottom:0.35rem">Clients (unique)</p><table id="clients"></table></div>
   </div>
 
   <div class="owner">
@@ -273,6 +326,8 @@ footer a { color: var(--muted); }
     drawChart(days, peak);
     fillDims("pages", s.pages, function (k) { return k; });
     fillDims("refs", s.refs, function (k) { return k; });
+    fillDims("srcs", s.srcs, function (k) { return k; });
+    fillDims("clients", s.clients, function (k) { return k; });
     var regionNames;
     try { regionNames = new Intl.DisplayNames(["en"], { type: "region" }); } catch (e) {}
     fillDims("countries", s.countries, function (k) {
