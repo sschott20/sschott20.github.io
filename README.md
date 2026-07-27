@@ -1,6 +1,6 @@
 # Personal Website
 
-**Live at [sschott20.github.io](https://sschott20.github.io/)**
+**Live at [sschott20.github.io](https://sschott20.github.io/?src=rdme)**
 
 Built with [Jekyll](https://jekyllrb.com/), deployed automatically by GitHub Pages on every push to `main`.
 
