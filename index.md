@@ -25,23 +25,18 @@ I am a Computer Science PhD student at Yale, advised by Prof. Lin Zhong in the [
 
 Before starting my PhD, I completed a B.S. in Mathematics and Computer Science at Yale (2021 to 2025). I worked with the same lab on Hopter, a Rust operating system for embedded devices, and earlier with Prof. Jay Lim on correctly rounded floating-point math libraries.
 
-## Preprints
-
-<ul class="projects">
-  <li>
-    <a class="name" href="https://arxiv.org/abs/2607.05482">TypeGo: An OS Runtime for Embodied Agents</a>.
-    <span class="desc">Structuring LLM-based planning as an OS-style runtime so embodied agents can act in real time on concurrent goals.</span>
-    <span class="meta">Guojun Chen, <span class="me">Alex Schott</span>, Lin Zhong. arXiv:2607.05482, July 2026.</span>
-  </li>
-</ul>
-
 ## Publications
 
-<ul class="projects">
+<ul class="pubs">
   <li>
-    <a class="name" href="https://doi.org/10.1136/tobaccocontrol-2021-057243">Understanding e-cigarette content and promotion on YouTube through machine learning</a>.
-    <span class="desc">Using machine learning to characterize e-cigarette video content, featured products, uploaders, and marketing on YouTube.</span>
-    <span class="meta">Grace Kong, <span class="me">Alex Schott</span>, Juhan Lee, Hassan Dashtian, Dhiraj Murthy. Tobacco Control 32(6), 2023.</span>
+    <a class="title" href="https://arxiv.org/abs/2607.05482">TypeGo: An OS Runtime for Embodied Agents</a>
+    <span class="venue">Agentic OS @ SOSP 2026 &middot; October 2026</span>
+    <span class="authors">Guojun Chen, <span class="me">Alex Schott</span>, and Lin Zhong</span>
+  </li>
+  <li>
+    <a class="title" href="https://doi.org/10.1136/tobaccocontrol-2021-057243">Understanding e-cigarette content and promotion on YouTube through machine learning</a>
+    <span class="venue">Tobacco Control &middot; 2023</span>
+    <span class="authors">Grace Kong, <span class="me">Alex Schott</span>, Juhan Lee, Hassan Dashtian, and Dhiraj Murthy</span>
   </li>
 </ul>
 
@@ -56,7 +51,7 @@ Before starting my PhD, I completed a B.S. in Mathematics and Computer Science a
   </li>
   <li>
     <a class="name" href="https://arxiv.org/abs/2607.05482">TypeGo</a>.
-    <span class="desc">A multi-layer LLM planning system for the Unitree Go2 quadruped, combining high-level natural-language reasoning with low-level learned control. Now a preprint on arXiv.</span>
+    <span class="desc">A multi-layer LLM planning system for the Unitree Go2 quadruped, combining high-level natural-language reasoning with low-level learned control. Appearing at Agentic OS @ SOSP 2026.</span>
   </li>
   <li>
     <a class="name" href="https://github.com/sschott20/go2_sim2real">go2_sim2real</a>.
@@ -87,5 +82,5 @@ Before starting my PhD, I completed a B.S. in Mathematics and Computer Science a
 </ul>
 
 <footer>
-  Last updated July 2026. Built with Jekyll. <a href="https://github.com/sschott20">Source on GitHub</a>.
+  Last updated August 2026. Built with Jekyll. <a href="https://github.com/sschott20">Source on GitHub</a>.
 </footer>

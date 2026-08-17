@@ -145,6 +145,34 @@ a:hover {
   margin-top: 0.15rem;
 }
 
+.pubs {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.pubs li {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.pubs li:last-child { border-bottom: none; }
+
+.pubs .title {
+  font-weight: 600;
+}
+
+.pubs .venue,
+.pubs .authors {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.pubs .venue {
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
 .me {
   font-weight: 600;
   color: var(--fg);
